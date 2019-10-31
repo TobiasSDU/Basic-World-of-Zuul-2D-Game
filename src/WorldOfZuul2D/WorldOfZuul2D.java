@@ -24,8 +24,10 @@ import javafx.util.Duration;
 public class WorldOfZuul2D extends Application {
     private static HashSet<String> currentlyActiveKeys;
     private static Player player;
+    private static Thermostat thermostat;
     private static Room currentRoom;
-    private static boolean up, down, left, right, xKey;   
+    private static boolean up, down, left, right, xKey, cKey;   
+    private double thermostatRotation = 0;
     
     @Override
     public void init(){
@@ -58,9 +60,13 @@ public class WorldOfZuul2D extends Application {
         // Get user input
         getUserInput(scene);
         
-        //Create Player
+        // Create Player
         player = new Player(375, 375, 30, "/images/player.png");
         Image playerSprite = new Image(player.getImageLink());
+        
+        // Create thermostat
+        thermostat = new Thermostat(stage.getWidth() - 300, stage.getHeight() - 300, "/images/thermostat.png");
+        Image thermostatSprite = new Image(thermostat.getImageLink());
 
         // Create game loop and make it run indefinitely
         Timeline gameLoop = new Timeline();
@@ -83,7 +89,8 @@ public class WorldOfZuul2D extends Application {
 
                     // Set time since the game was started
                     double t = (System.currentTimeMillis() - startTime) / 1000;
-
+                    double thermostatSetting = Math.sqrt(Math.pow(Math.floor((thermostatRotation % 360) / 36), 2));
+                    
                     // Text settings
                     Font font = Font.font("Lato", FontWeight.NORMAL, 16);
                     gc.setFont(font);
@@ -109,9 +116,32 @@ public class WorldOfZuul2D extends Application {
                     gc.drawImage(playerSprite, player.getX(), player.getY());
                     currentRoom.displayItems(gc);
                     currentRoom.drawExits(stage, gc);
+                    
+                    // Thermostat
+                    gc.save();
+                    gc.translate(550, 550);
+                    gc.rotate(thermostatRotation);
+                    gc.translate(-550, -550);
+                    
+                    gc.setFill(Color.WHITE);
+                    gc.fillOval(450, 450, 200, 200);
+                    gc.setFill(Color.BLACK);
+                    gc.fillRect(547, 460, 6, 30);
+                    gc.restore();
+
+                    if (thermostatRotation > 0){
+                        if (xKey) thermostatRotation -= 1;
+                    }
+                    if (thermostatRotation < 359){
+                        if (cKey) thermostatRotation += 1;
+                    }
+
+                    gc.setFill(Color.BLACK);
+                    gc.fillText("Thermostat: " + (int)thermostatSetting, 500, 550);
                 }
             }
         );
+
         
         // Add keyFrames to game loop
         gameLoop.getKeyFrames().add(kf);
@@ -129,7 +159,7 @@ public class WorldOfZuul2D extends Application {
     public void stop(){
         System.out.println("Stopped");
     }
-    
+   
     // Get user key input
     private static void getUserInput(Scene scene){
         // Use a set to prevent duplicates
@@ -182,6 +212,12 @@ public class WorldOfZuul2D extends Application {
             xKey = true;
         } else{
             xKey = false;
+        }
+        
+        if (currentlyActiveKeys.contains("C")){
+            cKey = true;
+        } else{
+            cKey = false;
         }
     }
     
