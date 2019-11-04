@@ -1,11 +1,13 @@
 package WorldOfZuul2D;
 
+import javafx.scene.canvas.GraphicsContext;
 import javafx.stage.Stage;
 
 public class Player extends WorldOfZuul2D{
     private double x;
     private double y;
     final private int size;
+    private static boolean up, down, left, right;
     final private String imageLink;
     
     public Player(double x, double y, int size, String imageLink){
@@ -15,12 +17,15 @@ public class Player extends WorldOfZuul2D{
         this.imageLink = imageLink;
     }
     
-    public void move(Stage stage){
+    public void move(Stage stage, GraphicsContext gc){
+        setMovementVariables();
+        displayDistanceToItems(gc);
+        
         // Movement speed and direction
-        if (super.getDirection().contains("up")) y -= 4;
-        if (super.getDirection().contains("down")) y += 4;
-        if (super.getDirection().contains("left")) x -= 4;
-        if (super.getDirection().contains("right")) x += 4;
+        if (getDirection().contains("up")) y -= 4;
+        if (getDirection().contains("down")) y += 4;
+        if (getDirection().contains("left")) x -= 4;
+        if (getDirection().contains("right")) x += 4;
 
         // Go through doors
         for (Exit exit: super.getCurrentRoom().getExits()){
@@ -48,6 +53,33 @@ public class Player extends WorldOfZuul2D{
         if (x > stage.getWidth() - size) x = stage.getWidth() - size;
         if (y < 0) y = 0;
         if (y > stage.getHeight() - size) y = stage.getHeight() - size;
+    }
+    
+    // Set movememnt variables
+    public void setMovementVariables(){
+        up = super.getCurrentlyActiveKeys().contains("UP") ? true : false;
+        down = super.getCurrentlyActiveKeys().contains("DOWN") ? true : false;
+        left = super.getCurrentlyActiveKeys().contains("LEFT") ? true : false;
+        right = super.getCurrentlyActiveKeys().contains("RIGHT") ? true : false;
+    }
+    
+    // Check which direction variables are active
+    public String getDirection(){
+        String directions = "";
+        if (up == true) directions += "up ";
+        if (down == true) directions += "down ";
+        if (left == true) directions += "left ";
+        if (right == true) directions += "right ";
+        return directions;
+    }
+    
+    // Display distance to items in the currently active room
+    public void displayDistanceToItems(GraphicsContext gc){
+        for (int i = 0; i < super.getCurrentRoom().getItems().size(); i++){
+            gc.fillText("Afstand til  " + super.getCurrentRoom().getItems().get(i).getName()
+                  + ": " + super.getCurrentRoom().getItems().get(i).calculateDistance(this),
+                                                                         500, (i + 1) * 20);
+        }
     }
     
     // Get x position
