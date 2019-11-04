@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="World_of_Zuul_2D.jar" size="26036" download="eager" />
+    <jar href="World_of_Zuul_2D.jar" size="28880" download="eager" />
   </resources>
   <jfx:javafx-desc  width="800" height="600" main-class="WorldOfZuul2D.WorldOfZuul2D"  name="World_of_Zuul_2D" />
   <update check="always"/>

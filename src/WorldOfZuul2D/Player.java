@@ -44,7 +44,7 @@ public class Player extends WorldOfZuul2D{
                         x = stage.getWidth() - size - 10;
                         break;
                 }
-                super.goRoom(exit.getDirection());
+                super.getCurrentRoom().goRoom(exit.getDirection());
             }
         }
         

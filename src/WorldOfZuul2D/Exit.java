@@ -1,21 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package WorldOfZuul2D;
 
 public class Exit {
     private double x;
     private double y;
     final private String direction;
-    final private Room parentRoom;
     final private Room targetRoom;
     final private String imageLink;
 
-    public Exit(String direction, Room parentRoom, Room targetRoom, String imageLink){
+    public Exit(String direction, Room targetRoom, String imageLink){
       this.direction = direction;
-      this.parentRoom = parentRoom;
       this.targetRoom = targetRoom;
       this.imageLink = imageLink;
     }

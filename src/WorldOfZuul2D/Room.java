@@ -32,8 +32,8 @@ public class Room extends WorldOfZuul2D{
     }
     
     // Add an exit to a room
-    public void setExit(String direction, Room parentRoom, Room neighbor, String imageLink){
-        exits.add(new Exit(direction, parentRoom, neighbor, imageLink));
+    public void setExit(String direction, Room neighbor, String imageLink){
+        exits.add(new Exit(direction, neighbor, imageLink));
     }
     
     // Get the room that an exit leads to by using the direction as the key
@@ -81,6 +81,7 @@ public class Room extends WorldOfZuul2D{
         }
     }
     
+    // Draw each item in the room
     public void displayItems(GraphicsContext gc){
         for (Item item: items){
             Image itemSprite = new Image(item.getImageLink());
@@ -92,6 +93,21 @@ public class Room extends WorldOfZuul2D{
             gc.setFill(Color.WHITE);
             gc.fillText(item.getName(), item.getX(), item.getY() + (item.getSize() * 1.5));
         }
+    }
+    
+    // Move between rooms
+    public void goRoom(String direction){   
+        // Get the exit of the chosen room
+        Room nextRoom = super.getCurrentRoom().getExit(direction);
+
+        // Go to the next room and show its description
+        if (nextRoom != null) super.setCurrentRoom(nextRoom);
+    }
+    
+    // Display text with info about what room the player is in
+    public void displayRoomText(GraphicsContext gc){
+      gc.setFill(Color.WHITE);
+      gc.fillText("Rum: " + super.getCurrentRoom().getName(), 10, 25);
     }
     
     // Get room name

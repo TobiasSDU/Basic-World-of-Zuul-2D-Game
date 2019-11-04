@@ -5,7 +5,7 @@ import javafx.scene.image.Image;
 
 // Controls animation of images
 public class AnimatedImage {
-    // Array of 
+    // Array of image frames
     public Image[] frames;
     public double duration;
      
