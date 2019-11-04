@@ -25,9 +25,7 @@ public class WorldOfZuul2D extends Application {
     private static HashSet<String> currentlyActiveKeys;
     private static Player player;
     private static Thermostat thermostat;
-    private static Room currentRoom;
-    private static boolean up, down, left, right, xKey, cKey;   
-    private double thermostatRotation = 0;
+    private static Room currentRoom; 
     
     @Override
     public void init(){
@@ -65,8 +63,7 @@ public class WorldOfZuul2D extends Application {
         Image playerSprite = new Image(player.getImageLink());
         
         // Create thermostat
-        thermostat = new Thermostat(stage.getWidth() - 300, stage.getHeight() - 300, "/images/thermostat.png");
-        Image thermostatSprite = new Image(thermostat.getImageLink());
+        thermostat = new Thermostat(stage.getWidth() - 300, stage.getHeight() - 300);
 
         // Create game loop and make it run indefinitely
         Timeline gameLoop = new Timeline();
@@ -88,8 +85,7 @@ public class WorldOfZuul2D extends Application {
                     gc.clearRect(0, 0, stage.getWidth(), stage.getHeight());
 
                     // Set time since the game was started
-                    double t = (System.currentTimeMillis() - startTime) / 1000;
-                    double thermostatSetting = Math.sqrt(Math.pow(Math.floor((thermostatRotation % 360) / 36), 2));
+                    double t = (System.currentTimeMillis() - startTime) / 1000;           
                     
                     // Text settings
                     Font font = Font.font("Lato", FontWeight.NORMAL, 16);
@@ -98,16 +94,8 @@ public class WorldOfZuul2D extends Application {
                     // Print name of the currently active room
                     displayRoomText(gc);
 
-                    // Set movement variables and update player position
-                    setMovement();
-                    player.move(stage);
-
-                    // Display distance to items
-                    for (int i = 0; i < currentRoom.getItems().size(); i++){
-                        gc.fillText("Afstand til  " + currentRoom.getItems().get(i).getName()
-                            + ": " + currentRoom.getItems().get(i).calculateDistance(player),
-                                                                          500, (i + 1) * 20);
-                    }
+                    // Update player position
+                    player.move(stage, gc);
 
                     // Set background color
                     background.setFill(Color.rgb(currentRoom.getBR(), currentRoom.getBG(), currentRoom.getBB()));
@@ -117,31 +105,11 @@ public class WorldOfZuul2D extends Application {
                     currentRoom.displayItems(gc);
                     currentRoom.drawExits(stage, gc);
                     
-                    // Thermostat
-                    gc.save();
-                    gc.translate(550, 550);
-                    gc.rotate(thermostatRotation);
-                    gc.translate(-550, -550);
-                    
-                    gc.setFill(Color.WHITE);
-                    gc.fillOval(450, 450, 200, 200);
-                    gc.setFill(Color.BLACK);
-                    gc.fillRect(547, 460, 6, 30);
-                    gc.restore();
-
-                    if (thermostatRotation > 0){
-                        if (xKey) thermostatRotation -= 1;
-                    }
-                    if (thermostatRotation < 359){
-                        if (cKey) thermostatRotation += 1;
-                    }
-
-                    gc.setFill(Color.BLACK);
-                    gc.fillText("Thermostat: " + (int)thermostatSetting, 500, 550);
+                    // Display thermostat
+                    thermostat.displayThermostat(gc);
                 }
             }
         );
-
         
         // Add keyFrames to game loop
         gameLoop.getKeyFrames().add(kf);
@@ -182,45 +150,6 @@ public class WorldOfZuul2D extends Application {
         });
     }
     
-    // Set movememnt variables
-    private static void setMovement(){
-        if (currentlyActiveKeys.contains("UP")){
-            up = true;
-        } else{
-            up = false;
-        }
-        
-        if (currentlyActiveKeys.contains("DOWN")){
-            down = true;
-        } else{
-            down = false;
-        }
-        
-        if (currentlyActiveKeys.contains("LEFT")){
-            left = true;
-        } else{
-            left = false;
-        }
-        
-        if (currentlyActiveKeys.contains("RIGHT")){
-            right = true;
-        } else{
-            right = false;
-        }
-        
-        if (currentlyActiveKeys.contains("X")){
-            xKey = true;
-        } else{
-            xKey = false;
-        }
-        
-        if (currentlyActiveKeys.contains("C")){
-            cKey = true;
-        } else{
-            cKey = false;
-        }
-    }
-    
     // Create rooms
     private void createRooms(Stage stage){
         // Define which rooms should in the game
@@ -258,17 +187,7 @@ public class WorldOfZuul2D extends Application {
         // Set the start location
         currentRoom = kitchen; 
     }
-    
-    // Check which direction variables are active
-    public String getDirection(){
-        String directions = "";
-        if (up == true) directions += "up ";
-        if (down == true) directions += "down ";
-        if (left == true) directions += "left ";
-        if (right == true) directions += "right ";
-        return directions;
-    }
-    
+
     // Get the room that the player is currently in
     public Room getCurrentRoom(){
         return currentRoom;
@@ -290,6 +209,11 @@ public class WorldOfZuul2D extends Application {
     public static void displayRoomText(GraphicsContext gc){
       gc.setFill(Color.WHITE);
       gc.fillText("Rum: " + currentRoom.getName(), 10, 25);
+    }
+    
+    // Get HashMap of currently active keys
+    public HashSet<String> getCurrentlyActiveKeys(){
+        return currentlyActiveKeys;
     }
     
     // Launch application
