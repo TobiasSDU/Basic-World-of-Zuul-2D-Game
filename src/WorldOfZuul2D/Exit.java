@@ -3,6 +3,8 @@ package WorldOfZuul2D;
 public class Exit {
     private double x;
     private double y;
+    private double centerX;
+    private double centerY;
     final private String direction;
     final private Room targetRoom;
     final private String imageLink;
@@ -23,6 +25,14 @@ public class Exit {
         return y;
     }
     
+    public double getCenterX(){
+        return centerX;
+    }
+    
+    public double getCenterY(){
+        return centerY;
+    }
+    
     // Get exit direction
     public String getDirection(){
         return direction;
@@ -36,11 +46,15 @@ public class Exit {
     // Set x position of an exit
     public void setX(double newX){
         x = newX;
+        if (direction == "up" || direction == "down") centerX = x + 25;
+        if (direction == "left" || direction == "right") centerX = x + 10;
     }
     
     // Set y position of an exit
     public void setY(double newY){
         y = newY;
+        if (direction == "up" || direction == "down") centerY = y + 10;
+        if (direction == "left" || direction == "right") centerY = y + 25;
     }
     
     // Get image link

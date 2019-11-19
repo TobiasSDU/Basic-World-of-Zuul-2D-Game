@@ -19,7 +19,6 @@ public class Player extends WorldOfZuul2D{
     
     public void move(Stage stage, GraphicsContext gc){
         setMovementVariables();
-        displayDistanceToItems(gc);
         
         // Movement speed and direction
         if (getDirection().contains("up")) y -= 4;
@@ -29,30 +28,40 @@ public class Player extends WorldOfZuul2D{
 
         // Go through doors
         for (Exit exit: super.getCurrentRoom().getExits()){
-            if (Math.sqrt(Math.pow(x - exit.getX(), 2) + Math.pow(y - exit.getY(), 2)) < size){
+            if (Math.sqrt(Math.pow(x + (size / 2) - exit.getCenterX(), 2) + Math.pow(y + (size / 2) - exit.getCenterY(), 2)) < size){
                 switch(exit.getDirection()){
-                    case "nord":
-                        y = stage.getHeight() - size - (size / 4);
+                    case "up":
+                        y = stage.getHeight() - size - 125 - 15;
                         break;
-                    case "syd":
-                        y = 0 + size + (size / 4);
+                    case "down":
+                        y = 0 + size + 125;
                         break;
-                    case "øst":
-                        x = 0 + size;
+                    case "right":
+                        x = 0 + size + 125;
                         break;
-                    case "vest":
-                        x = stage.getWidth() - size - 10;
+                    case "left":
+                        x = stage.getWidth() - size - 125 - 15;
                         break;
                 }
                 super.getCurrentRoom().goRoom(exit.getDirection());
             }
         }
         
+        // Collisions with items
+        for (Item item: super.getCurrentRoom().getItems()){
+            if (Math.sqrt(Math.pow(x + (size / 2) - item.getCenterX(), 2) + Math.pow(y + (size / 2) - item.getCenterY(), 2)) < (size / 2) + (item.getSize() / 2)){
+                if (getDirection().contains("up")) y += 4;
+                if (getDirection().contains("down")) y -= 4;
+                if (getDirection().contains("left")) x += 4;
+                if (getDirection().contains("right")) x -= 4;
+            }
+        }
+        
         // Collisions with walls
-        if (x < 0) x = 0;
-        if (x > stage.getWidth() - size) x = stage.getWidth() - size;
-        if (y < 0) y = 0;
-        if (y > stage.getHeight() - size) y = stage.getHeight() - size;
+        if (x < 125) x = 125;
+        if (x > stage.getWidth() - 125 - size) x = stage.getWidth() - 125 - size;
+        if (y < 125) y = 125;
+        if (y > stage.getHeight() - 125 - size) y = stage.getHeight() - 125 - size;
     }
     
     // Set movememnt variables
@@ -73,15 +82,6 @@ public class Player extends WorldOfZuul2D{
         return directions;
     }
     
-    // Display distance to items in the currently active room
-    public void displayDistanceToItems(GraphicsContext gc){
-        for (int i = 0; i < super.getCurrentRoom().getItems().size(); i++){
-            gc.fillText("Afstand til  " + super.getCurrentRoom().getItems().get(i).getName()
-                  + ": " + super.getCurrentRoom().getItems().get(i).calculateDistance(this),
-                                                                         500, (i + 1) * 20);
-        }
-    }
-    
     // Get x position
     public double getX(){
         return x;
@@ -100,6 +100,10 @@ public class Player extends WorldOfZuul2D{
     // Change y position by a certain amount
     public void setY(int amount){
         y += amount;
+    }
+    
+    public int getSize(){
+        return size;
     }
     
     // Get image link

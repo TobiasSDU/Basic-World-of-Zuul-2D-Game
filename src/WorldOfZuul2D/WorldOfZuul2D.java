@@ -21,7 +21,6 @@ import javafx.util.Duration;
 public class WorldOfZuul2D extends Application {
     private static HashSet<String> currentlyActiveKeys;
     private static Player player;
-    private static Thermostat thermostat;
     private static Room currentRoom; 
     
     @Override
@@ -51,11 +50,8 @@ public class WorldOfZuul2D extends Application {
         currentlyActiveKeys = UserInput.getUserInput(scene);
         
         // Create Player
-        player = new Player(375, 375, 30, "/images/player.png");
+        player = new Player(360, 360, 30, "/images/player.png");
         Image playerSprite = new Image(player.getImageLink());
-        
-        // Create thermostat
-        thermostat = new Thermostat(stage.getWidth() - 300, stage.getHeight() - 300);
 
         // Create game loop and make it run indefinitely
         Timeline gameLoop = new Timeline();
@@ -78,20 +74,24 @@ public class WorldOfZuul2D extends Application {
                     
                     // Clear canvas and print the name of the active room
                     CanvasSettings.updateCanvas(gc, stage, currentRoom);
-
+                    
+                    for(Item item: currentRoom.getItems()){
+                        item.drawInteractableCircle(gc, 125, player);
+                    }
+                    
+                    gc.setFill(Color.WHITE);
                     // Draw and update player
                     player.move(stage, gc);
                     gc.drawImage(playerSprite, player.getX(), player.getY());
                     
                     // Set background color
                     background.setFill(Color.rgb(currentRoom.getBR(), currentRoom.getBG(), currentRoom.getBB()));
-
+                    
                     // Display items and exits in the active room
                     currentRoom.displayItems(gc);
                     currentRoom.drawExits(stage, gc);
                     
-                    // Display thermostat
-                    thermostat.displayThermostat(gc);
+                    
                 }
             }
         );

@@ -10,7 +10,6 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 public class Room extends WorldOfZuul2D{
-    final private String description;
     final private String name;
     final private ArrayList<Exit> exits;
     final private ArrayList<Item> items;
@@ -20,8 +19,7 @@ public class Room extends WorldOfZuul2D{
     final private int backgroundG;
     final private int backgroundB;
     
-    public Room(String description, String name, int bckgR, int bckgG, int bckgB){
-        this.description = description;
+    public Room(String name, int bckgR, int bckgG, int bckgB){
         this.name = name;
         this.backgroundR = bckgR;
         this.backgroundG = bckgG;
@@ -37,7 +35,7 @@ public class Room extends WorldOfZuul2D{
     }
     
     // Get the room that an exit leads to by using the direction as the key
-    public Room getExit(String direction){
+    public Room getNextRoom(String direction){
         HashMap<String, Room> exitTargetRoom = new HashMap<>();
 
         for (Exit exit: exits){
@@ -48,8 +46,8 @@ public class Room extends WorldOfZuul2D{
     }
     
     // Add an item to a room
-    public void addItem(String name, double xPos, double yPos, int size, String imageLink){
-        items.add(new Item(name, xPos, yPos, size, imageLink));
+    public void addItem(Item item){
+        items.add(item);
     }
     
     // Draw doors
@@ -57,21 +55,21 @@ public class Room extends WorldOfZuul2D{
         // Set door position
         for(Exit exit: exits){
             switch (exit.getDirection()){
-                case "vest":
-                    exit.setX(0);
+                case "left":
+                    exit.setX(125);
                     exit.setY(stage.getHeight() / 2 - 25); 
                     break;
-                case "nord":
+                case "up":
                     exit.setX(stage.getWidth() / 2 - 25);
-                    exit.setY(0);
+                    exit.setY(125);
                     break;
-                case "øst":
-                    exit.setX(stage.getWidth() - 10);
+                case "right":
+                    exit.setX(stage.getWidth() - 125 - 10);
                     exit.setY(stage.getHeight() / 2 - 25);
                     break;
-                case "syd":
+                case "down":
                     exit.setX(stage.getWidth() / 2 - 25);
-                    exit.setY(stage.getHeight() - 10);
+                    exit.setY(stage.getHeight() - 125 - 10);
                     break;
                 default:
                     break;
@@ -98,7 +96,7 @@ public class Room extends WorldOfZuul2D{
     // Move between rooms
     public void goRoom(String direction){   
         // Get the exit of the chosen room
-        Room nextRoom = super.getCurrentRoom().getExit(direction);
+        Room nextRoom = super.getCurrentRoom().getNextRoom(direction);
 
         // Go to the next room and show its description
         if (nextRoom != null) super.setCurrentRoom(nextRoom);
@@ -113,11 +111,6 @@ public class Room extends WorldOfZuul2D{
     // Get room name
     public String getName(){
         return name;
-    }
-    
-    // Get room description
-    public String getDescription(){
-        return description;
     }
     
     // Get ArrayList of exits
